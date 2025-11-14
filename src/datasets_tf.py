@@ -21,10 +21,15 @@ def _prep_layer():
 
 def _build_pipeline(ds, training):
     autotune = tf.data.AUTOTUNE
+
+    aug_layer = _augment() if training else None
+    prep_layer = _prep_layer()
+
     if training:
         ds = ds.shuffle(1000)
-        ds = ds.map(lambda x, y: (_augment()(x), y), num_parallel_calls=autotune)
-    ds = ds.map(lambda x, y: (_prep_layer()(x), y), num_parallel_calls=autotune)
+        ds = ds.map(lambda x, y: (aug_layer(x, training=True), y), num_parallel_calls=autotune)
+
+    ds = ds.map(lambda x, y: (prep_layer(x), y), num_parallel_calls=autotune)
     ds = ds.prefetch(autotune)
     return ds
 
