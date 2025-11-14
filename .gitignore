@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dll
+.venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project artifacts
+models/
+reports/
+data/
+!data/README.md
+
+# Jupyter
+.ipynb_checkpoints/
