@@ -4,14 +4,21 @@ from pathlib import Path
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-from src.datasets_tf import get_datasets
+from src.datasets_tf import get_datasets, get_datasets_from_manifests
 from src.model_tf import build_resnet50
 
 
 def train(data_dir: str, out_model: str, img_size: int = 224, batch_size: int = 32,
           epochs_head: int = 10, epochs_ft: int = 10, lr_head: float = 1e-4, lr_ft: float = 1e-5,
-          patience: int = 4):
-    train_ds, val_ds, test_ds, class_names = get_datasets(data_dir, img_size=img_size, batch_size=batch_size)
+          patience: int = 4, manifests: bool = False):
+    if manifests:
+        train_ds, val_ds, test_ds, class_names = get_datasets_from_manifests(
+            data_dir, img_size=img_size, batch_size=batch_size
+        )
+    else:
+        train_ds, val_ds, test_ds, class_names = get_datasets(
+            data_dir, img_size=img_size, batch_size=batch_size
+        )
 
     model, base = build_resnet50(input_shape=(img_size, img_size, 3))
 
@@ -61,7 +68,8 @@ def train(data_dir: str, out_model: str, img_size: int = 224, batch_size: int = 
 
 def main():
     parser = argparse.ArgumentParser(description='Train ResNet50 on Malaria cell images (TF/Keras)')
-    parser.add_argument('--data_dir', type=str, required=True, help='Directory with train/val/test subfolders')
+    parser.add_argument('--data_dir', type=str, required=True, help='Directory with train/val/test OR manifests folder')
+    parser.add_argument('--manifests', action='store_true', help='Treat data_dir as a manifests directory (train.csv, val.csv, test.csv)')
     parser.add_argument('--out', type=str, default='models/best_resnet50.h5', help='Path to save best model')
     parser.add_argument('--img_size', type=int, default=224)
     parser.add_argument('--batch_size', type=int, default=32)
@@ -82,6 +90,7 @@ def main():
         lr_head=args.lr_head,
         lr_ft=args.lr_ft,
         patience=args.patience,
+        manifests=args.manifests,
     )
 
 
