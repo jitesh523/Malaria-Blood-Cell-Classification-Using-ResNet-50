@@ -17,6 +17,7 @@ End-to-end pipeline to classify segmented blood cell images as Parasitized vs Un
 - requirements.txt
 
 ## Setup
+
 python3 -m venv .venv source .venv/bin/activate pip install -r requirements.txt
 
 
@@ -25,9 +26,30 @@ python3 -m venv .venv source .venv/bin/activate pip install -r requirements.txt
 
 **Option B (CLI):** Place the NIH Malaria dataset manually with the following structure:
 
+/path/to/dataset/cell_images/ Parasitized/ Uninfected/
+
+
 ## 1) Create splits (CLI only)
+
+python -m src.data_prep --raw_dir /path/to/dataset/cell_images
+
+--out_dir data/splits --val_size 0.15 --test_size 0.15 --seed 42
+
 
 ## 2) Train
 **Notebook:** Open and run `malaria.ipynb`.
 
 **CLI:**
+
+python -m src.train_tf --data_dir data/splits --out models/best_resnet50.keras
+
+--img_size 224 --batch_size 32 --epochs_head 10 --epochs_ft 10 --lr_head 1e-4 --lr_ft 1e-5
+
+## 3) Evaluate
+
+python -m src.eval_tf --model models/best_resnet50.keras --data_dir data/splits --out_dir reports
+
+Outputs:
+
+- reports/figures/confusion_matrix.png
+- reports/metrics.txt
