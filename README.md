@@ -114,6 +114,4 @@ Outputs:
 
 TensorFlow / Keras · ResNet-50 · scikit-learn · OpenCV · Streamlit · Matplotlib / Seaborn
 
-## 📄 License
 
-No license specified yet — add one (e.g. MIT) if you plan to share or accept contributions.
